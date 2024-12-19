@@ -1,4 +1,4 @@
-import React, {forwardRef, useImperativeHandle, useCallback} from 'react';
+import React, {forwardRef, useImperativeHandle, useCallback, useMemo} from 'react';
 import {View, TouchableOpacity, FlatList} from 'react-native';
 import {isExist} from './helpers/isExist';
 import Input from './components/Input';
@@ -76,6 +76,9 @@ const SelectDropdown = (
       selectItem(index);
     },
   }));
+
+  const selectedIndex = useMemo(() => findIndexInArr(selectedItem, dataArr), [selectedItem, dataArr]);
+
   /* ******************* Methods ******************* */
   const openDropdown = () => {
     dropdownButtonRef.current.measure((fx, fy, w, h, px, py) => {
@@ -91,7 +94,7 @@ const SelectDropdown = (
     onBlur && onBlur();
   };
   const scrollToSelectedItem = () => {
-    const indexInCurrArr = findIndexInArr(selectedItem, dataArr);
+    const indexInCurrArr = selectedIndex;
     setTimeout(() => {
       if (disableAutoScroll) {
         return;
@@ -144,8 +147,7 @@ const SelectDropdown = (
     );
   };
   const renderFlatlistItem = ({item, index}) => {
-    const indexInCurrArr = findIndexInArr(selectedItem, dataArr);
-    const isSelected = index == indexInCurrArr;
+    const isSelected = index == selectedIndex;
 
     let clonedElement = renderItem ? renderItem(item, index, isSelected) : <View />;
     let props = {...clonedElement.props};
